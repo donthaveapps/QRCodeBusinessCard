@@ -11,7 +11,6 @@ def main():
     Title = st.sidebar.text_input("Job Title")
     Phone = st.sidebar.text_input("Phone")
     Email = st.sidebar.text_input("Email")
-    Notes = st.sidebar.text_input("Notes")
 
     # main body
     st.markdown("# QR Code Business Card")
@@ -20,7 +19,7 @@ def main():
     st.write("")
 
     ## Concatenate contact details
-    Contact_Detail_Str = f'BEGIN:VCARD\nVERSION:3.0\nN:{Last_Name};{First_Name};;;\nORG:{Organisation}\nTITLE:{Title}\nTEL;TYPE=WORK,VOICE:{Phone}\nEMAIL:{Email}\nNOTES:{Notes}\nEND:VCARD'
+    Contact_Detail_Str = f'BEGIN:VCARD\nVERSION:3.0\nN:{Last_Name};{First_Name};;;\nORG:{Organisation}\nTITLE:{Title}\nTEL;TYPE=WORK,VOICE:{Phone}\nEMAIL:{Email}\nEND:VCARD'
     img = qrcode.make(Contact_Detail_Str)
     img_byte_arr = io.BytesIO()  # Convert PIL image to bytes array
     img.save(img_byte_arr, format='PNG')
@@ -28,7 +27,7 @@ def main():
 
     # Create three-column layout and place image in centre column
     # https://discuss.streamlit.io/t/how-to-center-images-latex-header-title-etc/1946/5
-    col1, col2, col3 = st.columns([1,3,4])
+    col1, col2, col3 = st.columns([1,2,4])
 
     with col1:
         st.write("")
@@ -42,8 +41,7 @@ def main():
         **Organisation:** {Organisation}\n
         **Job Title:** {Title}\n
         **Phone:** {Phone}\n
-        **Email:** {Email}\n
-        **Notes:** {Notes}\n
+        **Email:** {Email}
         """)
 
     st.write("")
