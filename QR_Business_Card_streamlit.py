@@ -1,8 +1,8 @@
-!pip install qrcode[pil]
+# !pip install qrcode[pil]
 import streamlit as st
 import qrcode
 
-def main():
+# def main():
     # sidebar
     st.sidebar.markdown("# Input")
     First_Name = st.sidebar.text_input("First Name")
@@ -20,5 +20,5 @@ def main():
     img = qrcode.make(Contact_Detail_Str)
     st.image(img)
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
