@@ -15,7 +15,7 @@ def main():
     # main body
     st.markdown("# QR Code Business Card")
     st.markdown("As COVID gave the world the necessary nudge to embrace remote working, we have also also come to notice how [out of place](https://www.bbc.co.uk/news/business-58419842) the paper business cards have become.  Embeding professional contact details in QR Codes provides a cheap, more sustainable and remotely sharable solution to this problem.")
-    st.markdown("Just input the contact details on the left panel (you might have to tap an arrow bottom at the top left depending on your device) and download the QR Code image below.  Enjoy!")
+    st.markdown("Just input the contact details on the left panel (depending on your device, you might have to tap an arrow bottom at the top left to unhide the panel) and download the QR Code image below.  Enjoy!")
     st.write("")
 
     ## Concatenate contact details
