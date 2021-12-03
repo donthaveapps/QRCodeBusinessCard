@@ -16,6 +16,7 @@ def main():
     st.markdown("# QR Code Business Card")
     st.markdown("As COVID gave the world the necessary nudge to embrace remote working, we have also also come to notice how [out of place](https://www.bbc.co.uk/news/business-58419842) the paper business cards have become.  Embeding professional contact details in QR Codes provides a cheap, more sustainable and remotely sharable solution to this problem.")
     st.markdown("Just input the contact details on the left panel (depending on your device, you might have to tap an arrow bottom at the top left to unhide the panel) and download the QR Code image below.  Enjoy!")
+    st.markdown("_The webapp is not connected to any database and I do not collect any data, feel free to examine [the source code](https://github.com/donthaveapps/QRCodeBusinessCard)._")
     st.write("")
 
     ## Concatenate contact details
@@ -45,7 +46,7 @@ def main():
         """)
 
     st.write("")
-    st.markdown("_Created by_ @donthaveapps🐙")
+    st.markdown("_Created by_ [@donthaveapps](https://github.com/donthaveapps/QRCodeBusinessCard)🐙")
 
 if __name__ == "__main__":
     main()
