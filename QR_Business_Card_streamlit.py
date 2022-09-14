@@ -1,6 +1,8 @@
 # !pip install qrcode[pil]
 import streamlit as st
 import qrcode, PIL, io
+# https://pypi.org/project/qrcode/
+# https://www.geeksforgeeks.org/cropping-an-image-in-a-circular-way-using-python/
 
 def main():
     # sidebar
