@@ -1,7 +1,0 @@
-[theme]
-# base="dark"
-primaryColor="#D7DF23"  # BB dark teal
-backgroundColor="#1B2D37"  # lime
-secondaryBackgroundColor="#49575F"  # 80% dark teal
-textColor="#E0E0E1"  # Light grey
-font="sans serif"

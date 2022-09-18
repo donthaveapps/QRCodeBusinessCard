@@ -1,0 +1,12 @@
+[theme]
+# base="dark"
+primaryColor="#D7DF23"  # lime
+backgroundColor="#1B2D37"  # dark teal
+secondaryBackgroundColor="#49575F"  # 80% dark teal  
+textColor="#E0E0E1"  # Light grey
+font="sans serif"
+
+# "#D7DF23"  # lime
+# "#49575F"  # 80% dark teal
+# "#E0E0E1"  # Light grey
+# "#1B2D37"  # dark teal
