@@ -1,7 +1,8 @@
 # !pip install qrcode[pil]
 import profile
 import streamlit as st
-import qrcode, PIL, io
+import qrcode, io
+from PIL import Image
 from qrcode.image.styledpil import StyledPilImage
 # https://pypi.org/project/qrcode/
 # https://www.geeksforgeeks.org/cropping-an-image-in-a-circular-way-using-python/
@@ -16,8 +17,8 @@ def main():
     Title = st.sidebar.text_input("Job Title")
     Phone = st.sidebar.text_input("Phone")
     Email = st.sidebar.text_input("Email")
-    logo_im = st.sidebar.file_uploader("Upload logo (.jpg or .png) for QR Code overlay (Optional)", type=['png', 'jpg'])
-    profile_im = st.sidebar.file_uploader("Upload profile picture (.jpg or .png) for QR Code Business Card (Optional)", type=['png', 'jpg'])
+    logo_file = st.sidebar.file_uploader("Upload logo (.jpg or .png) for QR Code overlay (Optional)", type=['png', 'jpg'])
+    profile_file = st.sidebar.file_uploader("Upload profile picture (.jpg or .png) for QR Code Business Card (Optional)", type=['png', 'jpg'])
     card_font_colour = st.sidebar.color_picker("Select font colour for QR Business Card (default: black", value="#000000")
     card_bg_colour = st.sidebar.color_picker("Select background colour for QR Business Card (default: white)", value="#FFFFFF")
 
@@ -31,7 +32,7 @@ def main():
         
         ## Create QR Code
         # TODO: if logo_im is not NONE, add logo overlay
-        st.write(logo_im)  # To be deleted
+        st.write(logo_file)  # To be deleted
 
         qr = qrcode.QRCode(
             error_correction=qrcode.constants.ERROR_CORRECT_M,
@@ -40,9 +41,16 @@ def main():
             )
         qr.add_data(Contact_Detail_Str)
 
-        if logo_im is not None:
-            # Transform logo_im to SQUARE
-            qr_im = qr.make_image(image_factory=StyledPilImage, embeded_image_path=logo_im)
+        if logo_file is not None:
+            # qr_im = qr.make_image(image_factory=StyledPilImage, embeded_image_path=logo_im)
+            # TODO: PLAN B - resize logo to square
+            logo_im = Image.open(logo_file)
+            qr_im = qr.make_image()
+            qr_file = qr_im.save(io.BytesIO(), format='PNG')
+            print(f"qr_im = {qr_im}")
+            qr_im.show()
+            qr_im = Image.open(qr_file)
+            qr_im = add_logo_on_image(logo_im, qr_im)
         else:
             qr_im = qr.make_image()
         
@@ -60,7 +68,9 @@ def main():
         # https://discuss.streamlit.io/t/how-to-center-images-latex-header-title-etc/1946/5
         col1, col2, col3 = st.columns([1,2,4])
 
-        cropped_im = crop2circle(profile_im)
+        if profile_file is not None:
+            profile_im = Image.open(profile_file)
+            cropped_im = crop2circle(profile_im)
 
         with col1:
             st.write("")
@@ -69,7 +79,7 @@ def main():
             st.image(qr_im_byte_arr) #, caption = f"""""")
 
         with col3:
-            if profile_im is not None:
+            if profile_file is not None:
                 st.image(cropped_im)
 
             st.markdown(f"""
@@ -94,9 +104,50 @@ def main():
     st.markdown("_Created by_ [@donthaveapps](https://github.com/donthaveapps/QRCodeBusinessCard)🐙")
 
 def crop2circle(profile_im):
-    """Crop image to circle"""
+    """
+    Take a profile_im PIL image object
+    Crop image to circle and return cropped_im PIL image object
+    """
     cropped_im = profile_im
     return cropped_im
+
+def add_logo_on_image(logo_im, image_im):
+    """
+    Take a 'logo' PIL image object and an 'image' PIL image object
+    Resize logo (if needed) and paste it onto the centre of the image
+    Return overlaid_im PIL image object
+    """
+
+    logo_size_limit = 140
+
+    logo_width, logo_height = logo_im.size
+    print(f"Logo size = {logo_width} x {logo_height}")
+
+    image_width, image_height = image_im.size
+    print(f"QR code size = {image_width} x {image_height}")
+
+    # Check if logo needs to be resized
+    if logo_width > logo_size_limit or logo_height > logo_size_limit:
+        if logo_width > logo_height:
+            logo_new_width = logo_size_limit
+            logo_new_height = int(logo_size_limit * logo_height / logo_width)
+        else:
+            logo_new_height = logo_size_limit
+            logo_new_width = int(logo_size_limit * logo_width / logo_height)
+
+        # Resize logo
+        print(f"Resizing logo to w={logo_new_width} x h={logo_new_height}")
+        logo_im = logo_im.resize((logo_new_width, logo_new_height))
+    logo_im.show()
+
+    # Add the logo
+    print(f"logo_im = {logo_im}")
+    print(f"image_im = {image_im}")
+    overlaid_im = Image.Image.paste(image_im, logo_im) #TODO, (int((image_width - logo_new_width)/2), int((image_height - logo_new_height)/2)))
+    # .Image.paste(image_im, logo_im, (int((image_width - logo_new_width)/2), int((image_height - logo_new_height)/2)))
+    print(f"overlaid_im = {overlaid_im}")
+
+    return overlaid_im
 
 if __name__ == "__main__":
     main()
