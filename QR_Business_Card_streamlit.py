@@ -1,9 +1,13 @@
 # !pip install qrcode[pil]
+import io
 import profile
+from lib2to3.pgen2.token import COLONEQUAL
+
+import qrcode
 import streamlit as st
-import qrcode, io
 from PIL import Image
 from qrcode.image.styledpil import StyledPilImage
+
 # https://pypi.org/project/qrcode/
 # https://www.geeksforgeeks.org/cropping-an-image-in-a-circular-way-using-python/
 # https://docs.streamlit.io/library/api-reference/widgets/st.color_picker
@@ -46,10 +50,10 @@ def main():
             # TODO: PLAN B - resize logo to square
             logo_im = Image.open(logo_file)
             qr_im = qr.make_image()
-            qr_file = qr_im.save(io.BytesIO(), format='PNG')
-            print(f"qr_im = {qr_im}")
-            qr_im.show()
-            qr_im = Image.open(qr_file)
+            # qr_file = qr_im.save(io.BytesIO(), format='PNG')
+            # print(f"qr_im = {qr_im}")
+            # qr_im.show()
+            # qr_im = Image.open(qr_file)
             qr_im = add_logo_on_image(logo_im, qr_im)
         else:
             qr_im = qr.make_image()
@@ -130,21 +134,31 @@ def add_logo_on_image(logo_im, image_im):
     if logo_width > logo_size_limit or logo_height > logo_size_limit:
         if logo_width > logo_height:
             logo_new_width = logo_size_limit
-            logo_new_height = int(logo_size_limit * logo_height / logo_width)
+            logo_new_height = int(logo_size_limit * logo_height / logo_width)    
         else:
             logo_new_height = logo_size_limit
             logo_new_width = int(logo_size_limit * logo_width / logo_height)
-
+        
         # Resize logo
         print(f"Resizing logo to w={logo_new_width} x h={logo_new_height}")
         logo_im = logo_im.resize((logo_new_width, logo_new_height))
-    logo_im.show()
+        
+        # Logo background square dim
+        logo_background_dim = logo_size_limit
+
+    else:
+        logo_background_dim = max(logo_width, logo_height)
+    
+    logo_background_im = Image.new("RGBA", (logo_background_dim, logo_background_dim))
+    resized_logo_im = Image.Image.paste(logo_background_im, logo_im)
+    resized_logo_im.show()
 
     # Add the logo
     print(f"logo_im = {logo_im}")
     print(f"image_im = {image_im}")
-    overlaid_im = Image.Image.paste(image_im, logo_im) #TODO, (int((image_width - logo_new_width)/2), int((image_height - logo_new_height)/2)))
+    # overlaid_im = Image.Image.paste(image_im, logo_im) #TODO, (int((image_width - logo_new_width)/2), int((image_height - logo_new_height)/2)))
     # .Image.paste(image_im, logo_im, (int((image_width - logo_new_width)/2), int((image_height - logo_new_height)/2)))
+    overlaid_im = image_im.make_image(image_factory=StyledPilImage, embeded_image_path=resized_logo_im)
     print(f"overlaid_im = {overlaid_im}")
 
     return overlaid_im
