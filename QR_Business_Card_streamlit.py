@@ -36,7 +36,7 @@ def main():
         
         ## Create QR Code
         # TODO: if logo_im is not NONE, add logo overlay
-        st.write(logo_file)  # To be deleted
+        # st.write(logo_file)  # To be deleted
 
         qr = qrcode.QRCode(
             error_correction=qrcode.constants.ERROR_CORRECT_M,
@@ -112,17 +112,36 @@ def crop2circle(profile_im):
     Take a profile_im PIL image object
     Crop image to circle and return cropped_im PIL image object
     """
-    cropped_im = profile_im
+    cropped_im = resize_image(profile_im, 150)
     return cropped_im
+
+def resize_image(image_im, dim_limit):
+    image_width, image_height = image_im.size
+
+    # Check if image_im needs to be resized
+    if image_width > dim_limit or image_height > dim_limit:
+        if image_width > image_height:
+            image_new_width = dim_limit
+            image_new_height = int(dim_limit * image_height / image_width)    
+        else:
+            image_new_height = dim_limit
+            image_new_width = int(dim_limit * image_width / image_height)
+        
+        # Resize logo
+        print(f"Resizing image to w={image_new_width} x h={image_new_height}")
+        image_im = image_im.resize((image_new_width, image_new_height))
+    
+    return image_im
 
 def add_logo_on_image(logo_im, image_im):
     """
     Take a 'logo' PIL image object and an 'image' PIL image object
     Resize logo (if needed) and paste it onto the centre of the image
     Return overlaid_im PIL image object
+    https://pillow.readthedocs.io/en/stable/reference/Image.html?highlight=image.convert()#PIL.Image.Image.convert
     """
 
-    logo_size_limit = 140
+    logo_size_limit = 200
 
     logo_width, logo_height = logo_im.size
     print(f"Logo size = {logo_width} x {logo_height}")
@@ -144,24 +163,33 @@ def add_logo_on_image(logo_im, image_im):
         logo_im = logo_im.resize((logo_new_width, logo_new_height))
         
         # Logo background square dim
-        logo_background_dim = logo_size_limit
+        logo_square_dim = logo_size_limit
 
     else:
-        logo_background_dim = max(logo_width, logo_height)
+        logo_square_dim = max(logo_width, logo_height)
+        logo_new_height = logo_height
+        logo_new_width = logo_width
     
-    logo_background_im = Image.new("RGBA", (logo_background_dim, logo_background_dim))
-    resized_logo_im = Image.Image.paste(logo_background_im, logo_im)
-    resized_logo_im.show()
+    logo_square_im = Image.new("RGBA", (logo_square_dim, logo_square_dim))
+    Image.Image.paste(logo_square_im, logo_im, (int((logo_square_dim - logo_new_width)/2), int((logo_square_dim - logo_new_height)/2)))
+    # logo_square_im.show()
 
     # Add the logo
+
     print(f"logo_im = {logo_im}")
     print(f"image_im = {image_im}")
     # overlaid_im = Image.Image.paste(image_im, logo_im) #TODO, (int((image_width - logo_new_width)/2), int((image_height - logo_new_height)/2)))
     # .Image.paste(image_im, logo_im, (int((image_width - logo_new_width)/2), int((image_height - logo_new_height)/2)))
-    overlaid_im = image_im.make_image(image_factory=StyledPilImage, embeded_image_path=resized_logo_im)
+    
+    # Convert image_im to "RGBA"
+    image_im.convert("RGBA")
+    # overlaid_im = image_im.make_image(image_factory=StyledPilImage, embeded_image_path=resized_logo_im)
+    Image.Image.paste(image_im, logo_im, (int((image_width - logo_new_width)/2), int((image_height - logo_new_height)/2)))
+    overlaid_im = image_im
     print(f"overlaid_im = {overlaid_im}")
 
     return overlaid_im
+
 
 if __name__ == "__main__":
     main()
